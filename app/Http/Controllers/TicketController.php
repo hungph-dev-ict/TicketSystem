@@ -3,9 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\TicketFormRequest;
+use App\Models\Ticket;
 
 class TicketController extends Controller
 {
+    private $ticket;
+
+    public function __construct(Ticket $ticket)
+    {
+        $this->modelTicket = $ticket;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -23,7 +32,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        //
+        return view('tickets.create');
     }
 
     /**
@@ -32,9 +41,12 @@ class TicketController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TicketFormRequest $request)
     {
-        //
+        $data = $request->all();
+        $newTicket = $this->modelTicket->createTicket($data);
+
+        return redirect()->back()->with('data', $newTicket);
     }
 
     /**
