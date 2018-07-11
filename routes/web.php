@@ -12,5 +12,22 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
+
+Route::resource('tickets', 'TicketController');
+
+Route::resource('comments', 'CommentController')->only(
+    'store'
+);
+
+Route::get('about', [
+    'as' => 'about',
+    'uses' => 'PageController@about'
+]);
+
+Route::get('contact', [
+    'as' => 'contact',
+    'uses' => 'PageController@contact'
+]);
+
