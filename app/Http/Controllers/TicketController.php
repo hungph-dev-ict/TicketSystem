@@ -3,9 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\TicketFormRequest;
+use App\Models\Ticket;
 
 class TicketController extends Controller
 {
+    private $ticket;
+
+    public function __construct(Ticket $ticket)
+    {
+        $this->modelTicket = $ticket;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +22,8 @@ class TicketController extends Controller
      */
     public function index()
     {
-        //
+        $tickets = $this->modelTicket->getAllTicket();
+        return view('tickets.index', compact('tickets'));
     }
 
     /**
@@ -23,7 +33,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        //
+        return view('tickets.create');
     }
 
     /**
@@ -32,9 +42,12 @@ class TicketController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TicketFormRequest $request)
     {
-        //
+        $data = $request->all();
+        $newTicket = $this->modelTicket->createTicket($data);
+
+        return redirect()->route('tickets.index')->with('data_store', $newTicket);
     }
 
     /**
@@ -45,7 +58,8 @@ class TicketController extends Controller
      */
     public function show($id)
     {
-        //
+        $selectedTicket = $this->modelTicket->showTicket($id);
+        return view('tickets.show')->with('selectedTicket', $selectedTicket);
     }
 
     /**
@@ -56,7 +70,10 @@ class TicketController extends Controller
      */
     public function edit($id)
     {
-        //
+        $selectedTicket = $this->modelTicket->showTicket($id);
+        return view('tickets.edit', compact(
+            'selectedTicket'
+        ));
     }
 
     /**
@@ -66,9 +83,19 @@ class TicketController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TicketFormRequest $request, $id)
     {
-        //
+        $data = $request->all();
+
+        if($request->get('status') != null) {
+            $data['status'] = 0;
+        } else {
+            $data['status'] = 1;
+        }
+
+        $updatedTicket = $this->modelTicket->updateTicket($id, $data);
+
+        return redirect()->route('tickets.show', $id)->with('data_update', $id);
     }
 
     /**
@@ -79,6 +106,7 @@ class TicketController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $deletedTicket = $this->modelTicket->deleteTicket($id);
+        return redirect()->route('tickets.index', $id)->with('data_delete', $id);
     }
 }
