@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 
 class LoginController extends Controller
 {
@@ -25,7 +26,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -35,5 +36,25 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    /**
+     * Get the maximum number of attempts to allow.
+     *
+     * @return int
+     */
+    public function maxAttempts()
+    {
+        return 2;
+    }
+
+    /**
+     * Get the number of minutes to throttle for.
+     *
+     * @return int
+     */
+    public function decayMinutes()
+    {
+        return 1;
     }
 }
